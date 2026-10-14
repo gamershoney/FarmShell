@@ -2,8 +2,9 @@ package game
 
 import "image/color"
 
-func InitGameLoop() {
+func InitGameLoop() bool {
 
+	return true
 }
 
 type Appearance struct {
@@ -12,16 +13,19 @@ type Appearance struct {
 	Char rune
 }
 
-type Crop struct {
-	Width  int
-	Height int
-	Name   string  `json:"crop_name"`
-	Amount int     `json:"amount"`
-	Value  float64 `json:"crop_value"`
+type Block struct {
+	Name    BlockName `json:"crop_name"`
+	Amount  int       `json:"amount"`
+	Value   float64   `json:"crop_value"`
+	IsCrop  bool
+	IsSolid bool
+	HP      float64
 }
 
 type Tile struct {
-	Type *Crop `json:"crop"`
+	Blocks []BlockName
+	Height int
+	Width  int
 }
 
 type TilePos struct {
@@ -30,15 +34,15 @@ type TilePos struct {
 }
 
 type model struct {
-	Playername string           `json:"username"`
-	Crops      map[string]*Crop `json:"player_crops"`
+	Playername string            `json:"username"`
+	Crops      map[string]*Block `json:"player_crops"`
 	Tiles      map[TilePos]*Tile
 }
 
 func newGameModel() model {
 	defUser := "big_player"
 
-	crops := make(map[string]*Crop)
+	crops := make(map[string]*Block)
 
 	Tiles := make(map[TilePos]*Tile)
 	model := model{
