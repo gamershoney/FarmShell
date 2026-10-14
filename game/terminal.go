@@ -20,6 +20,12 @@ type Block struct {
 	IsCrop  bool
 	IsSolid bool
 	HP      float64
+	Pos     BlockPos
+}
+
+type BlockPos struct {
+	x int
+	y int
 }
 
 type Tile struct {
@@ -28,27 +34,39 @@ type Tile struct {
 	Width  int
 }
 
-type TilePos struct {
-	x int
-	y int
+type Player struct {
+	Pos  BlockPos
+	Name string
+}
+type model struct {
+	Crops    map[string]*Block `json:"player_crops"`
+	Blocks   map[BlockPos]*Block
+	ViewPort ViewPort
+	Player   Player
 }
 
-type model struct {
-	Playername string            `json:"username"`
-	Crops      map[string]*Block `json:"player_crops"`
-	Tiles      map[TilePos]*Tile
+type ViewPort struct {
+	Width    int
+	Height   int
+	Position int
 }
 
 func newGameModel() model {
-	defUser := "big_player"
+	defUser := Player{
+		Pos: BlockPos{
+			x: 0,
+			y: 0,
+		},
+		Name: "New Player",
+	}
 
 	crops := make(map[string]*Block)
 
-	Tiles := make(map[TilePos]*Tile)
+	Block := make(map[BlockPos]*Block)
 	model := model{
-		Playername: defUser,
-		Crops:      crops,
-		Tiles:      Tiles,
+		Player: defUser,
+		Crops:  crops,
+		Blocks: Block,
 	}
 
 	return model
