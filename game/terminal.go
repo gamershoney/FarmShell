@@ -61,6 +61,20 @@ type model struct {
 	Player   Player
 }
 
+func (m model) Init() tea.Cmd {
+	return nil
+}
+
+func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	return m, nil
+}
+
+func (m model) View() tea.View {
+	view := m.RenderTiles()
+
+	return view
+}
+
 func (m model) GenerateTile(pos BlockPos) model {
 	roll := m.Rng.Float64()
 
@@ -111,15 +125,20 @@ func (m model) RenderTiles() tea.View {
 			if !ok {
 				m = m.GenerateTile(pos)
 			}
+			block, ok = m.Blocks[pos]
+			if !ok {
+				m = m.GenerateTile(pos)
+			}
 			texture, ok := textures[block.Name]
 			style := lipgloss.NewStyle().Background(texture.BG).Foreground(texture.FG)
 			b.WriteString(style.Render(string(texture.Char)))
 		}
+		b.WriteRune('\n')
 	}
 	return tea.NewView(b.String())
 }
 
-func newGameModel() model {
+func NewGameModel() model {
 	seed := int64(12345)
 
 	rng := rand.New(rand.NewSource(seed))
@@ -141,6 +160,14 @@ func newGameModel() model {
 		Blocks: Block,
 		Seed:   seed,
 		Rng:    rng,
+		ViewPort: ViewPort{
+			Width:  100,
+			Height: 30,
+			Position: BlockPos{
+				x: 0,
+				y: 0,
+			},
+		},
 	}
 
 	return model

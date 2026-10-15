@@ -17,6 +17,6 @@ var textures = map[BlockName]Appearance{
 	Grass: {
 		FG:   lipgloss.NoColor{},
 		BG:   DarkGreen,
-		Char: '\xFF',
+		Char: '\x20',
 	},
 }
