@@ -21,13 +21,14 @@ type Appearance struct {
 }
 
 type Block struct {
-	Name    BlockName `json:"crop_name"`
-	Amount  int       `json:"amount"`
-	Value   float64   `json:"crop_value"`
-	IsCrop  bool
-	IsSolid bool
-	HP      float64
-	Pos     BlockPos
+	Name       BlockName `json:"crop_name"`
+	Amount     int       `json:"amount"`
+	Value      float64   `json:"crop_value"`
+	IsCrop     bool
+	IsSolid    bool
+	HP         float64
+	Pos        BlockPos
+	Appearance Appearance
 }
 
 type BlockPos struct {
@@ -130,14 +131,13 @@ func (m model) GenerateTile(pos BlockPos) model {
 		if !ok {
 			fmt.Println("error could not find block in map: ", block)
 		}
+		item.Appearance = textures[item.Name]
 		m.Blocks[BlockPos{x: pos.x + cursor.x, y: pos.y + cursor.y}] = &item
 
 	}
 
 	return m
 }
-
-type RenderGrid
 
 func (m model) RenderTiles() tea.View {
 	m.ViewPort.Position = m.Player.Pos
@@ -161,16 +161,26 @@ func (m model) RenderTiles() tea.View {
 			if !ok {
 				m = m.GenerateTile(pos)
 			}
-			texture, ok := textures[block.Name]
-			style := lipgloss.NewStyle().Background(texture.BG).Foreground(texture.FG)
+			style := lipgloss.NewStyle().Background(block.Appearance.BG).Foreground(block.Appearance.FG)
 
-
-
-			b.WriteString(style.Render(string(texture.Char)))
+			b.WriteString(style.Render(string(block.Appearance.Char)))
 		}
 		b.WriteRune('\n')
 	}
 	return tea.NewView(b.String())
+}
+
+func (m *model) RenderPlayer() {
+	_, ok := m.Blocks[m.Player.Pos]
+
+	if !ok {
+		m.Blocks = m.GenerateTile(m.Player.Pos).Blocks
+	}
+
+	block := m.Blocks[m.Player.Pos]
+
+	block.Appearance.FG = m.Player.Texture.FG
+	block.Appearance.Char = m.Player.Texture.Char
 }
 
 func NewGameModel() model {
@@ -183,7 +193,8 @@ func NewGameModel() model {
 			x: 0,
 			y: 0,
 		},
-		Name: "New Player",
+		Texture: textures[PlayerBlock],
+		Name:    "New Player",
 	}
 
 	crops := make(map[string]*Block)
@@ -217,6 +228,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() tea.View {
+	m.RenderPlayer()
 	view := m.RenderTiles()
 
 	return view
