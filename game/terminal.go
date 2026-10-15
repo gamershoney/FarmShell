@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"image/color"
 	"math/rand"
-	"os"
+	"strings"
+
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
 )
 
 func InitGameLoop() bool {
@@ -58,7 +61,7 @@ type model struct {
 	Player   Player
 }
 
-func (m model) GenerateTile(pos BlockPos) {
+func (m model) GenerateTile(pos BlockPos) model {
 	roll := m.Rng.Float64()
 
 	var tile Tile
@@ -71,20 +74,32 @@ func (m model) GenerateTile(pos BlockPos) {
 		tile = GrassTile
 	}
 
-	if !ok {
-		fmt.Println("error: block not found in block map")
-		os.Exit(1)
+	cursor := BlockPos{x: 0, y: 0}
+	for _, block := range tile.Blocks {
+		if cursor.x >= tile.Width {
+			cursor.y++
+		}
+		if cursor.y >= tile.Height {
+			break
+		}
+		item, ok := BlockMap[block]
+		if !ok {
+			fmt.Println("error could not find block in map: ", block)
+		}
+		m.Blocks[BlockPos{x: pos.x + cursor.x, y: pos.y + cursor.y}] = &item
+
 	}
 
-	cursor := pos
-	for i, block := range tile.Blocks {
-	}
+	return m
 }
 
-func (m model) RenderTiles() model {
+func (m model) RenderTiles() tea.View {
 	m.ViewPort.Position = m.Player.Pos
 	halfwidth := m.ViewPort.Width / 2
 	halfheight := m.ViewPort.Height / 2
+
+	var b strings.Builder
+
 	for x := (m.ViewPort.Position.x - halfwidth); x < m.ViewPort.Width; x++ {
 		for y := (m.ViewPort.Position.y - halfheight); y < m.ViewPort.Height; y++ {
 			pos := BlockPos{
@@ -94,9 +109,14 @@ func (m model) RenderTiles() model {
 
 			block, ok := m.Blocks[pos]
 			if !ok {
+				m = m.GenerateTile(pos)
 			}
+			texture, ok := textures[block.Name]
+			style := lipgloss.NewStyle().Background(texture.BG).Foreground(texture.FG)
+			b.WriteString(style.Render(string(texture.Char)))
 		}
 	}
+	return tea.NewView(b.String())
 }
 
 func newGameModel() model {
