@@ -19,4 +19,9 @@ var textures = map[BlockName]Appearance{
 		BG:   DarkGreen,
 		Char: '\x20',
 	},
+	PlayerBlock: {
+		FG:   White,
+		BG:   nil,
+		Char: '@',
+	},
 }

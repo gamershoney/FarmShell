@@ -41,9 +41,26 @@ type Tile struct {
 	Width  int
 }
 
+type Direction int
+
+const North Direction = 0
+const East Direction = 1
+const South Direction = 2
+const West Direction = 3
+
 type Player struct {
-	Pos  BlockPos
-	Name string
+	Pos       BlockPos
+	Name      string
+	Direction Direction
+	Texture   Appearance
+}
+
+func (m model) MovePlayer(dir Direction) {
+	switch dir {
+	case condition:
+
+	}
+
 }
 
 type ViewPort struct {
@@ -59,20 +76,6 @@ type model struct {
 	Blocks   map[BlockPos]*Block
 	ViewPort ViewPort
 	Player   Player
-}
-
-func (m model) Init() tea.Cmd {
-	return nil
-}
-
-func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	return m, nil
-}
-
-func (m model) View() tea.View {
-	view := m.RenderTiles()
-
-	return view
 }
 
 func (m model) GenerateTile(pos BlockPos) model {
@@ -171,4 +174,18 @@ func NewGameModel() model {
 	}
 
 	return model
+}
+
+func (m model) Init() tea.Cmd {
+	return nil
+}
+
+func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	return m, nil
+}
+
+func (m model) View() tea.View {
+	view := m.RenderTiles()
+
+	return view
 }

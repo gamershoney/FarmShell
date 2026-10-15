@@ -4,6 +4,7 @@ type BlockName string
 
 const Wheat BlockName = "Wheat"
 const Grass BlockName = "Grass"
+const PlayerBlock BlockName = "Player"
 
 var BlockMap = map[BlockName]Block{
 	Wheat: {
