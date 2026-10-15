@@ -35,18 +35,27 @@ type BlockPos struct {
 	y int
 }
 
+func (b BlockPos) Add(n BlockPos) (r BlockPos) {
+	r.x = b.x + n.x
+	r.y = b.y + n.y
+
+	return r
+}
+
 type Tile struct {
 	Blocks []BlockName
 	Height int
 	Width  int
 }
 
-type Direction int
+type Direction = BlockPos
 
-const North Direction = 0
-const East Direction = 1
-const South Direction = 2
-const West Direction = 3
+var (
+	North = Direction{x: 0, y: -1}
+	South = Direction{x: 0, y: 1}
+	East  = Direction{x: 1, y: 0}
+	West  = Direction{x: -1, y: 0}
+)
 
 type Player struct {
 	Pos       BlockPos
@@ -55,11 +64,29 @@ type Player struct {
 	Texture   Appearance
 }
 
-func (m model) MovePlayer(dir Direction) {
-	switch dir {
-	case condition:
-
+func IsNavigable(m *model, pos BlockPos) bool {
+	_, ok := m.Blocks[pos]
+	if !ok {
+		model := m.GenerateTile(pos)
+		m.Blocks = model.Blocks
 	}
+	block := m.Blocks[pos]
+
+	if block.IsSolid {
+		return false
+	}
+	return true
+}
+
+func (m model) MovePlayer(dir Direction) model {
+	requested_pos := m.Player.Pos.Add(dir)
+	navigable := IsNavigable(&m, requested_pos)
+
+	if !navigable {
+		return m
+	}
+	m.Player.Pos = requested_pos
+	return m
 
 }
 
@@ -110,6 +137,8 @@ func (m model) GenerateTile(pos BlockPos) model {
 	return m
 }
 
+type RenderGrid
+
 func (m model) RenderTiles() tea.View {
 	m.ViewPort.Position = m.Player.Pos
 	halfwidth := m.ViewPort.Width / 2
@@ -134,6 +163,9 @@ func (m model) RenderTiles() tea.View {
 			}
 			texture, ok := textures[block.Name]
 			style := lipgloss.NewStyle().Background(texture.BG).Foreground(texture.FG)
+
+
+
 			b.WriteString(style.Render(string(texture.Char)))
 		}
 		b.WriteRune('\n')
