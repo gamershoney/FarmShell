@@ -8,7 +8,6 @@ import (
 )
 
 func InitGameLoop() bool {
-
 	return true
 }
 
@@ -77,6 +76,7 @@ func (m model) GenerateTile(pos BlockPos) {
 		os.Exit(1)
 	}
 
+	cursor := pos
 	for i, block := range tile.Blocks {
 	}
 }
@@ -94,14 +94,12 @@ func (m model) RenderTiles() model {
 
 			block, ok := m.Blocks[pos]
 			if !ok {
-
 			}
 		}
 	}
 }
 
 func newGameModel() model {
-
 	seed := int64(12345)
 
 	rng := rand.New(rand.NewSource(seed))
