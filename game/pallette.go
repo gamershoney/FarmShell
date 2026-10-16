@@ -8,6 +8,7 @@ var DarkYellow = lipgloss.Color("#98a808")
 var White = lipgloss.White
 var Black = lipgloss.Black
 var Brown = lipgloss.Color("#594100")
+var TextBlue = lipgloss.Color("#00c3ff")
 var textures = map[BlockName]Appearance{
 	Wheat: {
 		FG:   White,

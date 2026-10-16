@@ -8,20 +8,24 @@ const PlayerBlock BlockName = "Player"
 
 var BlockMap = map[BlockName]Block{
 	Wheat: {
-		Name:    Wheat,
-		Amount:  1,
-		Value:   1,
-		IsCrop:  true,
-		IsSolid: false,
-		HP:      1,
+		Name:       Wheat,
+		Amount:     1,
+		Value:      1,
+		IsCrop:     true,
+		IsSolid:    true,
+		HP:         1,
+		Appearance: textures[Wheat],
 	},
+
 	Grass: {
-		Name:    Grass,
-		Amount:  1,
-		Value:   0,
-		IsCrop:  false,
-		IsSolid: false,
-		HP:      100000,
+		Name:       Grass,
+		Amount:     1,
+		Value:      0,
+		IsCrop:     false,
+		IsSolid:    false,
+		HP:         100000,
+		Invincible: true,
+		Appearance: textures[Grass],
 	},
 }
 

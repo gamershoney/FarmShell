@@ -20,17 +20,6 @@ type Appearance struct {
 	Char rune
 }
 
-type Block struct {
-	Name       BlockName `json:"crop_name"`
-	Amount     int       `json:"amount"`
-	Value      float64   `json:"crop_value"`
-	IsCrop     bool
-	IsSolid    bool
-	HP         float64
-	Pos        BlockPos
-	Appearance Appearance
-}
-
 type BlockPos struct {
 	x int
 	y int
@@ -59,10 +48,21 @@ var (
 )
 
 type Player struct {
-	Pos       BlockPos
-	Name      string
-	Direction Direction
-	Texture   Appearance
+	Pos           BlockPos
+	Name          string
+	Direction     Direction
+	Texture       Appearance
+	InteractBox   BlockPos
+	DefaultDamage float64
+}
+
+func (p Player) Attack(m model) {
+	block, ok := m.Blocks[p.InteractBox]
+	if !ok {
+		return
+	}
+
+	block.ApplyDamage(&m, p.DefaultDamage)
 }
 
 func IsNavigable(m *model, pos BlockPos) bool {
@@ -87,6 +87,8 @@ func (m model) MovePlayer(dir Direction) model {
 		return m
 	}
 	m.Player.Pos = requested_pos
+	m.Player.InteractBox = m.Player.Pos.Add(BlockPos{1, 0})
+
 	return m
 
 }
@@ -122,6 +124,7 @@ func (m model) GenerateTile(pos BlockPos) model {
 	cursor := BlockPos{x: 0, y: 0}
 	for _, block := range tile.Blocks {
 		if cursor.x >= tile.Width {
+			cursor.x = 0
 			cursor.y++
 		}
 		if cursor.y >= tile.Height {
@@ -132,25 +135,36 @@ func (m model) GenerateTile(pos BlockPos) model {
 			fmt.Println("error could not find block in map: ", block)
 		}
 		item.Appearance = textures[item.Name]
-		m.Blocks[BlockPos{x: pos.x + cursor.x, y: pos.y + cursor.y}] = &item
+		item.Pos = BlockPos{x: pos.x + cursor.x, y: pos.y + cursor.y}
+		m.Blocks[item.Pos] = &item
+
+		cursor.x++
 
 	}
 
 	return m
 }
 
-func (m model) RenderTiles() tea.View {
+func (m model) RenderTiles() string {
 	m.ViewPort.Position = m.Player.Pos
 	halfwidth := m.ViewPort.Width / 2
 	halfheight := m.ViewPort.Height / 2
+	startX := m.ViewPort.Position.x - halfwidth
+	startY := m.ViewPort.Position.y - halfheight
 
 	var b strings.Builder
 
-	for x := (m.ViewPort.Position.x - halfwidth); x < m.ViewPort.Width; x++ {
-		for y := (m.ViewPort.Position.y - halfheight); y < m.ViewPort.Height; y++ {
+	for y := startY; y < startY+m.ViewPort.Height; y++ {
+		for x := startX; x < startX+m.ViewPort.Width; x++ {
 			pos := BlockPos{
 				x: x,
 				y: y,
+			}
+
+			if pos == m.Player.Pos {
+				style := lipgloss.NewStyle().Background(m.Player.Texture.BG).Foreground(m.Player.Texture.FG)
+				b.WriteString(style.Render(string(m.Player.Texture.Char)))
+				continue
 			}
 
 			block, ok := m.Blocks[pos]
@@ -162,25 +176,15 @@ func (m model) RenderTiles() tea.View {
 				m = m.GenerateTile(pos)
 			}
 			style := lipgloss.NewStyle().Background(block.Appearance.BG).Foreground(block.Appearance.FG)
-
+			if pos == m.Player.InteractBox {
+				highlight := lipgloss.Lighten(block.Appearance.BG, .2)
+				style = style.Background(highlight)
+			}
 			b.WriteString(style.Render(string(block.Appearance.Char)))
 		}
 		b.WriteRune('\n')
 	}
-	return tea.NewView(b.String())
-}
-
-func (m *model) RenderPlayer() {
-	_, ok := m.Blocks[m.Player.Pos]
-
-	if !ok {
-		m.Blocks = m.GenerateTile(m.Player.Pos).Blocks
-	}
-
-	block := m.Blocks[m.Player.Pos]
-
-	block.Appearance.FG = m.Player.Texture.FG
-	block.Appearance.Char = m.Player.Texture.Char
+	return b.String()
 }
 
 func NewGameModel() model {
@@ -193,8 +197,9 @@ func NewGameModel() model {
 			x: 0,
 			y: 0,
 		},
-		Texture: textures[PlayerBlock],
-		Name:    "New Player",
+		Texture:       textures[PlayerBlock],
+		Name:          "New Player",
+		DefaultDamage: 1,
 	}
 
 	crops := make(map[string]*Block)
@@ -224,12 +229,42 @@ func (m model) Init() tea.Cmd {
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case tea.KeyPressMsg:
+
+		switch msg.String() {
+		case "ctrl+c":
+			return m, tea.Quit
+
+		case "up", "w":
+			m = m.MovePlayer(North)
+			return m, nil
+
+		case "down", "s":
+			m = m.MovePlayer(South)
+			return m, nil
+
+		case "left", "a":
+			m = m.MovePlayer(West)
+			return m, nil
+
+		case "right", "d":
+			m = m.MovePlayer(East)
+			return m, nil
+
+		case "space":
+			m.Player.Attack(m)
+			return m, nil
+		}
+	}
+	m.Player.InteractBox = m.Player.Pos.Add(BlockPos{1, 0})
 	return m, nil
 }
 
 func (m model) View() tea.View {
-	m.RenderPlayer()
-	view := m.RenderTiles()
+	game := m.RenderTiles()
 
-	return view
+	top := m.RenderHeader()
+	screen := lipgloss.JoinVertical(lipgloss.Left, top, game)
+	return tea.NewView(screen)
 }
