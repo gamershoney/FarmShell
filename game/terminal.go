@@ -88,6 +88,8 @@ type model struct {
 	Blocks   map[BlockPos]*Block
 	ViewPort ViewPort
 	Player   Player
+	Ticks    uint64
+	Paused   bool
 }
 
 func (m model) GenerateTile(pos BlockPos) model {
@@ -207,11 +209,17 @@ func NewGameModel() model {
 }
 
 func (m model) Init() tea.Cmd {
-	return nil
+	return GameTick()
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
+	case GameTickMsg:
+		if !m.Paused {
+			m.Ticks++
+		}
+		return m, GameTick()
+
 	case tea.KeyPressMsg:
 
 		switch msg.String() {
