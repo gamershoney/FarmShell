@@ -1,5 +1,5 @@
 package game
 
 type Damage interface {
-	ApplyDamage(Damage float64) bool
+	ApplyDamage(This any, m *model, Damage float64) bool
 }

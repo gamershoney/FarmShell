@@ -47,24 +47,6 @@ var (
 	West  = Direction{x: -1, y: 0}
 )
 
-type Player struct {
-	Pos           BlockPos
-	Name          string
-	Direction     Direction
-	Texture       Appearance
-	InteractBox   BlockPos
-	DefaultDamage float64
-}
-
-func (p Player) Attack(m model) {
-	block, ok := m.Blocks[p.InteractBox]
-	if !ok {
-		return
-	}
-
-	block.ApplyDamage(&m, p.DefaultDamage)
-}
-
 func IsNavigable(m *model, pos BlockPos) bool {
 	_, ok := m.Blocks[pos]
 	if !ok {
@@ -265,6 +247,8 @@ func (m model) View() tea.View {
 	game := m.RenderTiles()
 
 	top := m.RenderHeader()
+	right := m.RenderRight()
 	screen := lipgloss.JoinVertical(lipgloss.Left, top, game)
+	screen = lipgloss.JoinHorizontal(lipgloss.Left, screen, right)
 	return tea.NewView(screen)
 }

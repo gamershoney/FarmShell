@@ -13,23 +13,24 @@ type Block struct {
 	Appearance   Appearance
 }
 
-func (b *Block) ApplyDamage(m *model, Damage float64) (Destroyed bool) {
+func (b *Block) ApplyDamage(This any, m *model, Damage float64) (Destroyed bool) {
 
 	if b.Invincible {
 		return false
 	}
 
-	if Damage > b.HP {
+	if Damage > b.HP || b.HP <= 0 {
 		b.HP = 0
 		grass := BlockMap[Grass]
 		m.Blocks[b.Pos] = &grass
+
+		if v, ok := This.(Inventory); ok {
+			v.AddToInventory(b.Name, b.ReturnAmount)
+		}
+
 		return true
 	}
 	b.HP -= Damage
-	if b.HP <= 0 {
-		grass := BlockMap[Grass]
-		m.Blocks[b.Pos] = &grass
-		return true
-	}
+
 	return false
 }
