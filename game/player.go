@@ -83,5 +83,9 @@ func (p *Player) SelectPrev() {
 func (m *model) PlaceBlock() {
 	block := m.Player.Inventory[m.Player.SelectedBlock]
 	newBlock := BlockMap[block.Name]
-	m.Blocks[m.Player.InteractBox] = &newBlock
+	replaced, ok := m.Blocks[m.Player.InteractBox]
+	if ok {
+		newBlock.Pos = replaced.Pos
+		m.Blocks[m.Player.InteractBox] = &newBlock
+	}
 }

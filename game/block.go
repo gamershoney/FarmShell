@@ -19,9 +19,11 @@ func (b *Block) ApplyDamage(This any, m *model, Damage float64) (Destroyed bool)
 		return false
 	}
 
-	if Damage > b.HP || b.HP <= 0 {
+	if Damage >= b.HP || b.HP <= 0 {
 		b.HP = 0
 		grass := BlockMap[Grass]
+		grass.Pos = b.Pos
+
 		m.Blocks[b.Pos] = &grass
 
 		if v, ok := This.(Inventory); ok {
