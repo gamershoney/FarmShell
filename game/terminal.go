@@ -245,7 +245,16 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "space":
 			m.Player.Attack(m)
 			return m, nil
+
+		case "]":
+			m.Player.SelectNext()
+			return m, nil
+
+		case "e":
+			m.PlaceBlock()
+			return m, nil
 		}
+
 	}
 	m.Player.InteractBox = m.Player.Pos.Add(BlockPos{1, 0})
 	return m, nil

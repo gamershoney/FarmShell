@@ -25,14 +25,19 @@ func (p *Player) AddToInventory(block BlockName, qty int) {
 		p.Inventory = make(InventorySlice, 0)
 	}
 
-	found := -1
 	for index, value := range p.Inventory {
 		if value.Name == block {
 			p.Inventory[index].Qty = p.Inventory[index].Qty + qty
-			found
+			return
 		}
 	}
 
+	item := InventoryBlock{
+		Name: block,
+		Qty:  qty,
+	}
+
+	p.Inventory = append(p.Inventory, item)
 }
 
 func (p *Player) RemoveFromInventory(block BlockName, qty int) (Success bool) {
@@ -54,9 +59,29 @@ func (p *Player) RemoveFromInventory(block BlockName, qty int) (Success bool) {
 
 func (p *Player) SelectNext() {
 
-	//iter.Pull(keys[])
+	next := p.SelectedBlock + 1
+
+	if len(p.Inventory)-1 > next {
+		p.SelectedBlock = next
+		return
+	}
+	p.SelectedBlock = 0
+
+}
+
+func (p *Player) SelectPrev() {
+	prev := p.SelectedBlock - 1
+
+	if prev < 0 {
+		p.SelectedBlock = len(p.Inventory) - 1
+		return
+	}
+
+	p.SelectedBlock = prev
 }
 
 func (m *model) PlaceBlock() {
-
+	block := m.Player.Inventory[m.Player.SelectedBlock]
+	newBlock := BlockMap[block.Name]
+	m.Blocks[m.Player.InteractBox] = &newBlock
 }
