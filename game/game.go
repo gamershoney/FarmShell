@@ -2,12 +2,25 @@ package game
 
 type BlockName string
 
+const Empty BlockName = "Empty"
 const Wheat BlockName = "Wheat"
 const Grass BlockName = "Grass"
 const PlayerBlock BlockName = "Player"
 const Wood BlockName = "Wood"
+const Leaf BlockName = "Leaf"
 
 var BlockMap = map[BlockName]Block{
+	Empty: {
+		Name:         Empty,
+		Amount:       0,
+		Value:        0,
+		IsCrop:       false,
+		IsSolid:      false,
+		HP:           1000,
+		Invincible:   true,
+		Appearance:   textures[Empty],
+		ReturnAmount: 0,
+	},
 	Wheat: {
 		Name:         Wheat,
 		Amount:       1,
@@ -41,6 +54,17 @@ var BlockMap = map[BlockName]Block{
 		Appearance:   textures[Wood],
 		ReturnAmount: 1,
 	},
+	Leaf: {
+		Name:         Leaf,
+		Amount:       1,
+		Value:        1,
+		IsCrop:       true,
+		IsSolid:      true,
+		HP:           1,
+		Invincible:   false,
+		Appearance:   textures[Leaf],
+		ReturnAmount: 1,
+	},
 }
 
 var WheatTile = Tile{
@@ -61,10 +85,11 @@ var GrassTile = Tile{
 
 var Tree1 = Tile{
 	Blocks: []BlockName{
-		Wood,
-		Wood,
-		Wood,
+		Leaf, Leaf, Leaf,
+		Empty, Wood, Empty,
+		Empty, Wood, Empty,
+		Empty, Wood, Empty,
 	},
-	Height: 3,
-	Width:  1,
+	Height: 4,
+	Width:  3,
 }

@@ -15,6 +15,11 @@ var FancyGray = lipgloss.Color("#62787F")
 var NeatBrown = lipgloss.Color("#2f1d00")
 
 var textures = map[BlockName]Appearance{
+	Empty: {
+		FG:   nil,
+		BG:   nil,
+		Char: '\x20',
+	},
 	Wheat: {
 		FG:   White,
 		BG:   Brown,
@@ -34,5 +39,10 @@ var textures = map[BlockName]Appearance{
 		FG:   NeatBrown,
 		BG:   NeatBrown,
 		Char: '\x20',
+	},
+	Leaf: {
+		FG:   LightGreen,
+		BG:   DarkGreen,
+		Char: '█',
 	},
 }

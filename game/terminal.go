@@ -119,6 +119,10 @@ func (m model) GenerateTile(pos BlockPos) model {
 		if !ok {
 			fmt.Println("error could not find block in map: ", block)
 		}
+		if item.Name == Empty {
+			cursor.x++
+			continue
+		}
 		item.Appearance = textures[item.Name]
 		item.Pos = BlockPos{x: pos.x + cursor.x, y: pos.y + cursor.y}
 		m.Blocks[item.Pos] = &item
