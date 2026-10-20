@@ -81,7 +81,14 @@ func (p *Player) SelectPrev() {
 }
 
 func (m *model) PlaceBlock() {
+	if len(m.Player.Inventory) <= 0 {
+		return
+	}
 	block := m.Player.Inventory[m.Player.SelectedBlock]
+	success := m.Player.RemoveFromInventory(block.Name, 1)
+	if !success {
+		return
+	}
 	newBlock := BlockMap[block.Name]
 	replaced, ok := m.Blocks[m.Player.InteractBox]
 	if ok {

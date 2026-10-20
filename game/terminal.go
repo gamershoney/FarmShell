@@ -98,9 +98,12 @@ func (m model) GenerateTile(pos BlockPos) model {
 	var tile Tile
 
 	switch {
+	case roll < .01:
+		tile = Tree1
+		break
 	case roll < .05:
 		tile = WheatTile
-
+		break
 	default:
 		tile = GrassTile
 	}
