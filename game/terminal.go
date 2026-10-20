@@ -5,6 +5,7 @@ import (
 	"image/color"
 	"math/rand"
 	"strings"
+	"time"
 
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
@@ -215,6 +216,25 @@ func NewGameModel() model {
 
 func (m model) Init() tea.Cmd {
 	return GameTick()
+}
+
+func (m model) GetViewPortTiles() {
+	pos := m.Player.Pos
+
+	halfWidth := m.ViewPort.Width / 2
+	halfHeight := m.ViewPort.Height / 2
+	startX := pos.x - halfWidth
+	startY := pos.y - halfHeight
+	for y := startY; y < startY+m.ViewPort.Height; y++ {
+		for x := startX; x < startX+m.ViewPort.Width; x++ {
+			cursor := BlockPos{
+				x: x,
+				y: y,
+			}
+
+			m.Blocks[cursor].Tick(time.Now())
+		}
+	}
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {

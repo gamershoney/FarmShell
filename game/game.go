@@ -8,6 +8,7 @@ const Grass BlockName = "Grass"
 const PlayerBlock BlockName = "Player"
 const Wood BlockName = "Wood"
 const Leaf BlockName = "Leaf"
+const Sappling BlockName = "Tree Sappling"
 
 var BlockMap = map[BlockName]Block{
 	Empty: {
@@ -64,6 +65,7 @@ var BlockMap = map[BlockName]Block{
 		Invincible:   false,
 		Appearance:   textures[Leaf],
 		ReturnAmount: 1,
+		ReturnItem:   Sappling,
 	},
 }
 

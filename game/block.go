@@ -1,5 +1,7 @@
 package game
 
+import "time"
+
 type Block struct {
 	Name         BlockName `json:"crop_name"`
 	Amount       int       `json:"amount"`
@@ -8,8 +10,11 @@ type Block struct {
 	IsSolid      bool
 	Invincible   bool
 	ReturnAmount int
+	Tick         func(time.Time)
+	State        uint
 	HP           float64
 	Pos          BlockPos
+	ReturnItem   BlockName
 	Appearance   Appearance
 }
 
