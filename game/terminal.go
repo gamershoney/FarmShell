@@ -100,10 +100,8 @@ func (m model) GenerateTile(pos BlockPos) model {
 	switch {
 	case roll < .01:
 		tile = Tree1
-		break
 	case roll < .05:
 		tile = WheatTile
-		break
 	default:
 		tile = GrassTile
 	}
@@ -253,6 +251,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.Player.SelectNext()
 			return m, nil
 
+		case "[":
+			m.Player.SelectPrev()
+			return m, nil
 		case "e":
 			m.PlaceBlock()
 			return m, nil

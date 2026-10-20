@@ -31,14 +31,15 @@ var BlockMap = map[BlockName]Block{
 	},
 
 	Wood: {
-		Name:       Wood,
-		Amount:     1,
-		Value:      1,
-		IsCrop:     true,
-		IsSolid:    true,
-		HP:         3,
-		Invincible: false,
-		Appearance: textures[Wood],
+		Name:         Wood,
+		Amount:       1,
+		Value:        1,
+		IsCrop:       true,
+		IsSolid:      true,
+		HP:           3,
+		Invincible:   false,
+		Appearance:   textures[Wood],
+		ReturnAmount: 1,
 	},
 }
 
