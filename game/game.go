@@ -95,3 +95,13 @@ var Tree1 = Tile{
 	Height: 4,
 	Width:  3,
 }
+
+var Tree2 = Tile{
+	Blocks: []BlockName{
+		Empty, Leaf, Empty,
+		Leaf, Leaf, Leaf,
+		Empty, Wood, Empty,
+	},
+	Height: 3,
+	Width:  3,
+}

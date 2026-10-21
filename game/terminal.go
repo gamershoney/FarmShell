@@ -100,7 +100,7 @@ func (m model) GenerateTile(pos BlockPos) model {
 
 	switch {
 	case roll < .01:
-		tile = Tree1
+		tile = Tree2
 	case roll < .05:
 		tile = WheatTile
 	default:
@@ -121,8 +121,7 @@ func (m model) GenerateTile(pos BlockPos) model {
 			fmt.Println("error could not find block in map: ", block)
 		}
 		if item.Name == Empty {
-			cursor.x++
-			continue
+			item = BlockMap[Grass]
 		}
 		item.Appearance = textures[item.Name]
 		item.Pos = BlockPos{x: pos.x + cursor.x, y: pos.y + cursor.y}
