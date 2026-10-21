@@ -5,7 +5,6 @@ import (
 	"image/color"
 	"math/rand"
 	"strings"
-	"time"
 
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
@@ -176,6 +175,36 @@ func (m model) RenderTiles() string {
 	return b.String()
 }
 
+func (m model) IsEmpty(
+	start BlockPos,
+	Width int,
+	Height int,
+) bool {
+	if Width <= 0 || Height <= 0 {
+		return false
+	}
+	xEnd := start.x + Width
+	yEnd := start.y + Height
+	for x := start.x; x < xEnd; x++ {
+		for y := start.y; y < yEnd; y++ {
+			pos := BlockPos{
+				x: x,
+				y: y,
+			}
+
+			block, ok := m.Blocks[pos]
+			if !ok {
+				return false
+			}
+
+			if block.IsSolid {
+				return false
+			}
+		}
+	}
+	return true
+}
+
 func NewGameModel() model {
 	seed := int64(12345)
 
@@ -217,22 +246,12 @@ func (m model) Init() tea.Cmd {
 	return GameTick()
 }
 
-func (m model) GetViewPortTiles() {
-	pos := m.Player.Pos
-
-	halfWidth := m.ViewPort.Width / 2
-	halfHeight := m.ViewPort.Height / 2
-	startX := pos.x - halfWidth
-	startY := pos.y - halfHeight
-	for y := startY; y < startY+m.ViewPort.Height; y++ {
-		for x := startX; x < startX+m.ViewPort.Width; x++ {
-			cursor := BlockPos{
-				x: x,
-				y: y,
-			}
-
-			m.Blocks[cursor].Tick(time.Now())
+func (m *model) Tick() {
+	for _, v := range m.Blocks {
+		if !v.CanTick {
+			continue
 		}
+		v.Tick(v, m)
 	}
 }
 
@@ -241,6 +260,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case GameTickMsg:
 		if !m.Paused {
 			m.Ticks++
+			m.Tick()
 		}
 		return m, GameTick()
 

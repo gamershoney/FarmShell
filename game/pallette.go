@@ -45,4 +45,9 @@ var textures = map[BlockName]Appearance{
 		BG:   DarkGreen,
 		Char: '█',
 	},
+	Sappling: {
+		FG:   LightGreen,
+		BG:   NeatBrown,
+		Char: '↨',
+	},
 }

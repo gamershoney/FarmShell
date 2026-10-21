@@ -1,7 +1,5 @@
 package game
 
-import "time"
-
 type Block struct {
 	Name         BlockName `json:"crop_name"`
 	Amount       int       `json:"amount"`
@@ -10,12 +8,14 @@ type Block struct {
 	IsSolid      bool
 	Invincible   bool
 	ReturnAmount int
-	Tick         func(time.Time)
-	State        uint
+	CanTick      bool
+	Tick         func(*Block, *model)
+	State        uint64
 	HP           float64
 	Pos          BlockPos
 	ReturnItem   BlockName
 	Appearance   Appearance
+	Destroy      func(*Block) (BlockName, int)
 }
 
 func (b *Block) ApplyDamage(This any, m *model, Damage float64) (Destroyed bool) {
@@ -32,7 +32,15 @@ func (b *Block) ApplyDamage(This any, m *model, Damage float64) (Destroyed bool)
 		m.Blocks[b.Pos] = &grass
 
 		if v, ok := This.(Inventory); ok {
-			v.AddToInventory(b.Name, b.ReturnAmount)
+			var name BlockName
+			var qty int
+			if b.Destroy != nil {
+				name, qty = b.Destroy(b)
+				v.AddToInventory(name, qty)
+			} else {
+
+				v.AddToInventory(b.Name, b.ReturnAmount)
+			}
 		}
 
 		return true

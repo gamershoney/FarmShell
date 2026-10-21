@@ -31,6 +31,14 @@ var BlockMap = map[BlockName]Block{
 		HP:           1,
 		Appearance:   textures[Wheat],
 		ReturnAmount: 1,
+		CanTick:      true,
+		Tick: func(self *Block, m *model) {
+			self.State++
+			switch n := self.State; {
+			case n > 1000:
+
+			}
+		},
 	},
 
 	Grass: {
@@ -66,6 +74,28 @@ var BlockMap = map[BlockName]Block{
 		Appearance:   textures[Leaf],
 		ReturnAmount: 1,
 		ReturnItem:   Sappling,
+		Destroy: func(self *Block) (BlockName, int) {
+			return self.ReturnItem, 1
+		},
+	},
+	Sappling: {
+		Name:         Sappling,
+		Amount:       1,
+		Value:        1,
+		IsCrop:       true,
+		IsSolid:      true,
+		HP:           1,
+		Invincible:   false,
+		Appearance:   textures[Sappling],
+		ReturnAmount: 1,
+		CanTick:      true,
+		State:        1,
+		Tick: func(self *Block, m *model) {
+			switch n := self.State; {
+			case n > 500:
+
+			}
+		},
 	},
 }
 
